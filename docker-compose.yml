@@ -1,0 +1,10 @@
+version: '3'
+services:
+  scorpion_spyder:
+    build: .
+    container_name: scorpion_spyder_container
+    volumes:
+      - .:/app
+    command: /bin/bash
+    stdin_open: true
+    tty: true
