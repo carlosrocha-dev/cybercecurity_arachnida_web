@@ -24,7 +24,7 @@ jobs:
         make clean
         make
         # Run some basic tests, replace with actual test commands
-        ./spyder https://42.fr
+        ./spyder https://carlosrocha.art.br/
       continue-on-error: true # Continue even if this step fails for better error reporting
 
     - name: Build and Test Scorpion
