@@ -3,16 +3,16 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: caalbert <caalbert@student.42sp.org.br>    +#+  +:+       +#+         #
+#    By: user42 <user42@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/28 15:03:43 by caalbert          #+#    #+#              #
-#    Updated: 2024/07/28 17:15:13 by caalbert         ###   ########.fr        #
+#    Updated: 2024/07/28 19:07:26 by user42           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # scorpion/Makefile
 CXX = g++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -I.. -I/usr/include
 
 SRCS = main_scorpion.cpp scorpion.cpp ../utils.cpp
 OBJS = $(SRCS:.cpp=.o)
@@ -23,7 +23,7 @@ RM = rm -f
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $(NAME) $(OBJS) -lexiv2
+	$(CXX) $(CXXFLAGS) -o $(NAME) $(OBJS) -L/usr/lib -lexiv2
 
 clean:
 	$(RM) $(OBJS) $(NAME)

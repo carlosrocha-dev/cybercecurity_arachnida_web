@@ -3,41 +3,26 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: caalbert <caalbert@student.42sp.org.br>    +#+  +:+       +#+         #
+#    By: user42 <user42@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/28 16:06:14 by caalbert          #+#    #+#              #
-#    Updated: 2024/07/28 16:06:15 by caalbert         ###   ########.fr        #
+#    Updated: 2024/07/28 19:18:43 by user42           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-DOCKER_COMPOSE = docker-compose
-DOCKER_COMPOSE_FILE = docker-compose.yml
-
-all: build_docker run_docker
+# Makefile
 
 build_docker:
-	$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) build
+	docker-compose build
 
-run_docker:
-	$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) up -d
+up_docker:
+	docker-compose up -d
 
-down_docker:
-	$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) down
+exec_docker:
+	@echo "Verificando se o contêiner está em execução..."
+	@docker-compose ps | grep scorpion_spyder_container || (echo "Erro: Contêiner não está em execução." && exit 1)
+	@echo "Acessando o contêiner..."
+	docker-compose exec scorpion_spyder_container /bin/bash || (echo "Erro: Falha ao acessar o contêiner." && exit 1)
 
-build_spyder:
-	$(MAKE) -C spyder
-
-build_scorpion:
-	$(MAKE) -C scorpion
-
-clean_spyder:
-	$(MAKE) -C spyder clean
-
-clean_scorpion:
-	$(MAKE) -C scorpion clean
-
-clean: clean_spyder clean_scorpion
-
-re: clean all
-
-.PHONY: all build_docker run_docker down_docker build_spyder build_scorpion clean_spyder clean_scorpion clean re
+clean_docker:
+	docker-compose down

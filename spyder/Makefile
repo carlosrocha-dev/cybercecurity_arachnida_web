@@ -3,16 +3,16 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: caalbert <caalbert@student.42sp.org.br>    +#+  +:+       +#+         #
+#    By: user42 <user42@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/28 10:25:35 by caalbert          #+#    #+#              #
-#    Updated: 2024/07/28 17:15:00 by caalbert         ###   ########.fr        #
+#    Updated: 2024/07/28 19:07:52 by user42           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # spyder/Makefile
 CXX = g++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -I..
 
 SRCS = main_spyder.cpp spyder.cpp ../utils.cpp
 OBJS = $(SRCS:.cpp=.o)
@@ -33,3 +33,4 @@ fclean: clean
 re: fclean all
 
 .PHONY: all clean fclean re
+

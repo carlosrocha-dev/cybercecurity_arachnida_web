@@ -10,6 +10,9 @@ RUN apt-get update && apt-get install -y \
     cmake \
     git
 
+# Criar diretórios para os projetos
+RUN mkdir -p /app/spyder /app/scorpion
+
 # Copiar os arquivos do projeto para o contêiner
 COPY ./spyder /app/spyder
 COPY ./scorpion /app/scorpion
