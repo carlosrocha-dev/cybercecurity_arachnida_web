@@ -1,13 +1,13 @@
-#ifndef SPYDER_HPP
-#define SPYDER_HPP
+#ifndef SPIDER_HPP
+#define SPIDER_HPP
 
 #include <string>
 #include <vector>
 #include <set>
 
-class Spyder {
+class Spider {
 public:
-    Spyder(const std::string& url, int depth, const std::string& path);
+    Spider(const std::string& url, int depth, const std::string& path);
     void downloadImages();
 
 private:
@@ -23,4 +23,4 @@ private:
     std::string path;
 };
 
-#endif // SPYDER_HPP
+#endif // SPIDER_HPP

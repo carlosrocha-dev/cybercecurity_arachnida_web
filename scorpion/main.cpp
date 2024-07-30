@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
 #include "scorpion.hpp"
-#include "utils.hpp"
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {

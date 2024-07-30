@@ -1,0 +1,16 @@
+{
+    "name": "arachnida-bonus",
+    "version": "1.0.0",
+    "description": "Server for arachnida project",
+    "main": "server.js",
+    "scripts": {
+      "start": "node server.js"
+    },
+    "dependencies": {
+      "axios": "^0.21.1",
+      "express": "^4.17.1",
+      "form-data": "^4.0.0",
+      "multer": "^1.4.2"
+    }
+  }
+  

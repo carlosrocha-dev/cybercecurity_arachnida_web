@@ -3,33 +3,39 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: user42 <user42@student.42.fr>              +#+  +:+       +#+         #
+#    By: caalbert <caalbert@student.42sp.org.br>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/28 15:03:43 by caalbert          #+#    #+#              #
-#    Updated: 2024/07/28 19:07:26 by user42           ###   ########.fr        #
+#    Updated: 2024/07/30 00:06:07 by caalbert         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-# scorpion/Makefile
 CXX = g++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -I.. -I/usr/include
+CXXFLAGS = -Wall -Wextra -std=c++11
+INCLUDES = -I/usr/include/x86_64-linux-gnu -I.
+LDFLAGS = -lcurl -lexiv2
+TARGET = scorpion
+SRC = scorpion.cpp main.cpp
+OBJ = $(SRC:.cpp=.o)
+DOCKER_IMAGE = scorpion
 
-SRCS = main_scorpion.cpp scorpion.cpp ../utils.cpp
-OBJS = $(SRCS:.cpp=.o)
-NAME = scorpion
+all: build
 
-RM = rm -f
+build: $(TARGET)
 
-all: $(NAME)
+$(TARGET): $(OBJ)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
-$(NAME): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $(NAME) $(OBJS) -L/usr/lib -lexiv2
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:
-	$(RM) $(OBJS) $(NAME)
+	rm -f $(OBJ) $(TARGET)
 
-fclean: clean
+docker-build:
+	docker build -t $(DOCKER_IMAGE) .
 
-re: fclean all
+docker-run:
+	docker run --rm -it $(DOCKER_IMAGE) /bin/bash
 
-.PHONY: all clean fclean re
+run: docker-build docker-run

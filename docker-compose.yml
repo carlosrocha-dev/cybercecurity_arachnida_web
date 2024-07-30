@@ -1,10 +1,29 @@
-version: '3'
+version: '3.8'
+
 services:
-  scorpion_spyder:
-    build: .
-    container_name: scorpion_spyder_container
-    volumes:
-      - .:/app
-    command: /bin/bash
-    stdin_open: true
-    tty: true
+  scorpion:
+    build:
+      context: ./scorpion
+    container_name: scorpion_container
+    networks:
+      - arachinida_network
+
+  spider:
+    build:
+      context: ./spider
+    container_name: spider_container
+    networks:
+      - arachinida_network
+
+  bonus:
+    build:
+      context: ./bonus
+    container_name: web_container
+    ports:
+      - "8080:80"
+    networks:
+      - arachinida_network
+
+networks:
+  arachinida_network:
+    driver: bridge
