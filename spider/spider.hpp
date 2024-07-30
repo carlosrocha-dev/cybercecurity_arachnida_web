@@ -5,10 +5,10 @@
 #include <vector>
 #include <set>
 
-class Spider {
+class spider {
 public:
-    Spider(const std::string& url, int depth, const std::string& path);
-    void startServer();
+    spider(const std::string& url, int depth, const std::string& path);
+    void downloadImages();
 
 private:
     void processUrl(const std::string& url, int currentDepth, std::set<std::string>& visited);
@@ -17,6 +17,7 @@ private:
     std::vector<std::string> extractLinks(const std::string& content);
     void saveImage(const std::string& imageUrl);
     bool createDirectories(const std::string& path);
+    std::string getImageFilename(const std::string& url);
 
     std::string url;
     int depth;

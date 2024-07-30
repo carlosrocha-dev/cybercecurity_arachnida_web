@@ -17,7 +17,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('html'));
 
-// Endpoint para o Spider
+// Endpoint para o spider
 app.get('/spider', async (req, res) => {
     try {
         const { url, depth } = req.query;

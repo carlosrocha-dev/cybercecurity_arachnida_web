@@ -6,7 +6,7 @@
 /*   By: caalbert <caalbert@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 10:25:35 by caalbert          #+#    #+#             */
-/*   Updated: 2024/07/30 12:23:39 by caalbert         ###   ########.fr       */
+/*   Updated: 2024/07/30 15:43:46 by caalbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    Spider spider(url, depth, path);
+    spider spider(url, depth, path);
     spider.downloadImages();
 
     return 0;

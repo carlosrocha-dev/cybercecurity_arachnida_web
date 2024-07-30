@@ -1,19 +1,11 @@
-FROM debian:bullseye-slim
-
-ENV DEBIAN_FRONTEND=noninteractive
-
-RUN apt-get update && \
-    apt-get install -y \
-    build-essential \
-    libcurl4-openssl-dev \
-    libexiv2-dev && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+FROM node:14-buster
 
 WORKDIR /app
 
+COPY package*.json ./
+
+RUN npm install
+
 COPY . .
 
-RUN make
-
-CMD ["/bin/bash"]
+CMD ["npm", "start"]
