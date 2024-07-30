@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.9'
 
 services:
   scorpion:
@@ -18,7 +18,7 @@ services:
   bonus:
     build:
       context: ./bonus
-    container_name: web_container
+    container_name: bonus_container
     ports:
       - "8080:80"
     networks:

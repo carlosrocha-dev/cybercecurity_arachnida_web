@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const depth = document.getElementById('spiderDepth').value;
 
         fetch(`/spider?url=${encodeURIComponent(url)}&depth=${encodeURIComponent(depth)}`)
-            .then(response => response.json())
+            .then(response => handleResponse(response))
             .then(data => {
                 spiderResult.textContent = JSON.stringify(data, null, 2);
             })
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
             method: 'POST',
             body: formData,
         })
-            .then(response => response.json())
+            .then(response => handleResponse(response))
             .then(data => {
                 scorpionResult.textContent = JSON.stringify(data, null, 2);
             })
@@ -48,4 +48,22 @@ document.addEventListener('DOMContentLoaded', function () {
                 scorpionResult.textContent = 'Error: ' + error.message;
             });
     });
+
+    function handleResponse(response) {
+        console.log('Response:', response);
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error('Network response was not ok: ' + text);
+            });
+        }
+
+        const contentType = response.headers.get('Content-Type');
+        if (contentType && contentType.includes('application/json')) {
+            return response.json();
+        } else {
+            return response.text().then(text => {
+                throw new Error('Expected JSON, got ' + contentType + ': ' + text);
+            });
+        }
+    }
 });

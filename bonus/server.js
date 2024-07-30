@@ -2,11 +2,16 @@ const express = require('express');
 const axios = require('axios');
 const multer = require('multer');
 const FormData = require('form-data');
+const cors = require('cors'); // Importar o pacote CORS
+
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 8080; // Usar a porta 8080 ou a definida no ambiente
 
 // Configuração do multer para upload de arquivos
 const upload = multer({ dest: 'uploads/' });
+
+// Habilitar CORS para todas as rotas
+app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

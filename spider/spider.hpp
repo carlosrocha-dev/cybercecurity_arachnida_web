@@ -8,7 +8,7 @@
 class Spider {
 public:
     Spider(const std::string& url, int depth, const std::string& path);
-    void downloadImages();
+    void startServer();
 
 private:
     void processUrl(const std::string& url, int currentDepth, std::set<std::string>& visited);

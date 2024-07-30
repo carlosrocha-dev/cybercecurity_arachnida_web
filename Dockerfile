@@ -7,9 +7,7 @@ RUN apt-get update && apt-get install -y \
     cmake \
     git
 
-
 RUN mkdir -p /app/spyder /app/scorpion
-
 
 COPY ./spyder /app/spyder
 COPY ./scorpion /app/scorpion

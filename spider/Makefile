@@ -3,34 +3,39 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: user42 <user42@student.42.fr>              +#+  +:+       +#+         #
+#    By: caalbert <caalbert@student.42sp.org.br>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/28 10:25:35 by caalbert          #+#    #+#              #
-#    Updated: 2024/07/28 19:07:52 by user42           ###   ########.fr        #
+#    Updated: 2024/07/30 13:25:12 by caalbert         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-# spyder/Makefile
 CXX = g++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -I..
+CXXFLAGS = -Wall -Wextra -std=c++11
+INCLUDES = -I/usr/include/x86_64-linux-gnu
+LDFLAGS = -lcurl
+TARGET = spider
+SRC = spider.cpp main.cpp utils.cpp
+OBJ = $(SRC:.cpp=.o)
+DOCKER_IMAGE = spider
 
-SRCS = main_spyder.cpp spyder.cpp ../utils.cpp
-OBJS = $(SRCS:.cpp=.o)
-NAME = spyder
+all: build
 
-RM = rm -f
+build: $(TARGET)
 
-all: $(NAME)
+$(TARGET): $(OBJ)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
-$(NAME): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $(NAME) $(OBJS) -lcurl
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:
-	$(RM) $(OBJS) $(NAME)
+	rm -f $(OBJ) $(TARGET)
 
-fclean: clean
+docker-build:
+	docker build -t $(DOCKER_IMAGE) .
 
-re: fclean all
+docker-run:
+	docker run --rm -it $(DOCKER_IMAGE) /bin/bash
 
-.PHONY: all clean fclean re
-
+run: docker-build docker-run

@@ -109,10 +109,6 @@ Para remover todas as imagens construídas pelo `docker-compose`:
 docker-compose down --rmi all
 ```
 
-## Contribuição
+## Links
 
-Se você quiser contribuir para este projeto, sinta-se à vontade para abrir um pull request ou relatar problemas na seção de issues.
-
-## Licença
-
-Este projeto é licenciado sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+EXIF: https://pt.wikipedia.org/wiki/Exchangeable_image_file_format
