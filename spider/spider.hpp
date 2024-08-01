@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 #include <set>
+#include <iostream>
+#include <fstream>
 
 class spider {
 public:
@@ -11,17 +13,19 @@ public:
     void downloadImages();
 
 private:
-    void processUrl(const std::string& url, int currentDepth, std::set<std::string>& visited);
+    std::string url;
+    int depth;
+    std::string path;
+    std::ofstream logFile;
+
+    void log(const std::string& message);
     std::string fetchContent(const std::string& url);
     std::vector<std::string> extractImageUrls(const std::string& content);
     std::vector<std::string> extractLinks(const std::string& content);
     void saveImage(const std::string& imageUrl);
     bool createDirectories(const std::string& path);
     std::string getImageFilename(const std::string& url);
-
-    std::string url;
-    int depth;
-    std::string path;
+    void processUrl(const std::string& url, int currentDepth, std::set<std::string>& visited);
 };
 
-#endif // SPIDER_HPP
+#endif

@@ -6,46 +6,49 @@
 /*   By: caalbert <caalbert@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 10:25:35 by caalbert          #+#    #+#             */
-/*   Updated: 2024/07/30 15:43:46 by caalbert         ###   ########.fr       */
+/*   Updated: 2024/08/01 08:51:19 by caalbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream>
 #include "spider.hpp"
-#include "utils.hpp"
+#include <iostream>
+#include <cstring>
 
 int main(int argc, char* argv[]) {
-    if (argc < 2) {
-        std::cerr << "Usage: " << argv[0] << " [-l N] [-p PATH] URL" << std::endl;
-        return 1;
-    }
-
+    std::string url;
     int depth = 5;
     std::string path = "./data/";
-    std::string url;
+    bool recursive = false;
 
     for (int i = 1; i < argc; ++i) {
-        std::string arg = argv[i];
-        if (arg == "-l") {
+        if (strcmp(argv[i], "-r") == 0) {
+            recursive = true;
+        } else if (strcmp(argv[i], "-l") == 0) {
             if (i + 1 < argc) {
-                depth = stringToInt(argv[++i]);
+                depth = std::atoi(argv[++i]);
+            } else {
+                std::cerr << "Option -l requires an argument" << std::endl;
+                return 1;
             }
-        } else if (arg == "-p") {
+        } else if (strcmp(argv[i], "-p") == 0) {
             if (i + 1 < argc) {
                 path = argv[++i];
+            } else {
+                std::cerr << "Option -p requires an argument" << std::endl;
+                return 1;
             }
         } else {
-            url = arg;
+            url = argv[i];
         }
     }
 
     if (url.empty()) {
-        std::cerr << "URL is required." << std::endl;
+        std::cerr << "URL is required" << std::endl;
         return 1;
     }
 
-    spider spider(url, depth, path);
-    spider.downloadImages();
+    spider mySpider(url, depth, path);
+    mySpider.downloadImages();
 
     return 0;
 }

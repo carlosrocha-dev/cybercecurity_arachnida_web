@@ -1,28 +1,25 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   spider.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: caalbert <caalbert@student.42sp.org.br>    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/30 13:03:26 by caalbert          #+#    #+#             */
-/*   Updated: 2024/07/30 18:51:46 by caalbert         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "spider.hpp"
 #include <curl/curl.h>
-#include <iostream>
-#include <fstream>
-#include <cstdlib>
 #include <sys/stat.h>
 #include <sys/types.h>
 
 spider::spider(const std::string& url, int depth, const std::string& path)
     : url(url), depth(depth), path(path) {
-    if (!createDirectories(path)) {
-        std::cerr << "Failed to create directories for path: " << path << std::endl;
+    logFile.open("spider.log");
+    if (!logFile) {
+        std::cerr << "Failed to open log file." << std::endl;
     }
+    log("Starting spider with URL: " + url + ", Depth: " + std::to_string(depth) + ", Path: " + path);
+    if (!createDirectories(path)) {
+        log("Failed to create directories for path: " + path);
+    }
+}
+
+void spider::log(const std::string& message) {
+    if (logFile) {
+        logFile << message << std::endl;
+    }
+    std::cout << message << std::endl;
 }
 
 size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* userp) {
@@ -32,28 +29,41 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* use
 
 std::string spider::fetchContent(const std::string& url) {
     CURL* curl;
+    CURLcode res;
     std::string readBuffer;
     curl = curl_easy_init();
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-        curl_easy_perform(curl);
+        res = curl_easy_perform(curl);
+        if (res != CURLE_OK) {
+            log("Failed to fetch content from URL: " + url + ", Error: " + std::string(curl_easy_strerror(res)));
+        }
         curl_easy_cleanup(curl);
+    } else {
+        log("Failed to initialize CURL for URL: " + url);
     }
     return readBuffer;
 }
 
 std::vector<std::string> spider::extractImageUrls(const std::string& content) {
     std::vector<std::string> imageUrls;
+    std::vector<std::string> validExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
     size_t pos = 0;
     while ((pos = content.find("src=\"", pos)) != std::string::npos) {
         pos += 5;  // skip past "src=\""
         size_t end = content.find("\"", pos);
         std::string url = content.substr(pos, end - pos);
-        imageUrls.push_back(url);
+        for (const auto& ext : validExtensions) {
+            if (url.find(ext) != std::string::npos) {
+                imageUrls.push_back(url);
+                break;
+            }
+        }
         pos = end;
     }
+    log("Extracted " + std::to_string(imageUrls.size()) + " image URLs.");
     return imageUrls;
 }
 
@@ -67,6 +77,7 @@ std::vector<std::string> spider::extractLinks(const std::string& content) {
         links.push_back(url);
         pos = end;
     }
+    log("Extracted " + std::to_string(links.size()) + " links.");
     return links;
 }
 
@@ -81,10 +92,17 @@ void spider::saveImage(const std::string& imageUrl) {
             curl_easy_setopt(curl, CURLOPT_URL, imageUrl.c_str());
             curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
             curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
-            curl_easy_perform(curl);
+            CURLcode res = curl_easy_perform(curl);
+            if (res != CURLE_OK) {
+                log("Failed to save image from URL: " + imageUrl + ", Error: " + std::string(curl_easy_strerror(res)));
+            }
             fclose(fp);
+        } else {
+            log("Failed to open file for writing: " + filename);
         }
         curl_easy_cleanup(curl);
+    } else {
+        log("Failed to initialize CURL for image URL: " + imageUrl);
     }
 }
 
@@ -92,7 +110,7 @@ bool spider::createDirectories(const std::string& path) {
     struct stat st;
     if (stat(path.c_str(), &st) == -1) {
         if (mkdir(path.c_str(), 0777) != 0) {
-            std::cerr << "Failed to create directory: " << path << std::endl;
+            log("Failed to create directory: " + path);
             return false;
         }
     }
@@ -117,7 +135,12 @@ void spider::processUrl(const std::string& url, int currentDepth, std::set<std::
         return;
     }
     visited.insert(url);
+    log("Processing URL: " + url + " at depth: " + std::to_string(currentDepth));
     std::string content = fetchContent(url);
+    if (content.empty()) {
+        log("No content fetched from URL: " + url);
+        return;
+    }
     auto imageUrls = extractImageUrls(content);
     auto links = extractLinks(content);
     for (const auto& imageUrl : imageUrls) {

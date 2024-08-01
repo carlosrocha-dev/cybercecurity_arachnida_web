@@ -27,7 +27,7 @@ jobs:
         ./spyder https://carlosrocha.art.br/
       continue-on-error: true # Continue even if this step fails for better error reporting
 
-    - name: Build and Test Scorpion
+    - name: Build and Test scorpion
       run: |
         cd scorpion
         make clean
