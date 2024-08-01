@@ -6,7 +6,7 @@
 /*   By: caalbert <caalbert@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 10:25:35 by caalbert          #+#    #+#             */
-/*   Updated: 2024/08/01 08:51:19 by caalbert         ###   ########.fr       */
+/*   Updated: 2024/08/01 17:38:25 by caalbert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,18 @@
 #include <iostream>
 #include <cstring>
 
+void printUsage(const char* programName) {
+    std::cout << "Usage: " << programName << " [options] URL\n"
+              << "Options:\n"
+              << "  -r             Recursively download images\n"
+              << "  -l [N]         Specify the maximum depth level for recursive download (default: 5)\n"
+              << "  -p [PATH]      Specify the path to save downloaded files (default: ./data/)\n";
+}
+
 int main(int argc, char* argv[]) {
     std::string url;
-    int depth = 5;
-    std::string path = "./data/";
+    int depth = 5; // Default depth
+    std::string path = "./data/"; // Default path
     bool recursive = false;
 
     for (int i = 1; i < argc; ++i) {
@@ -47,8 +55,12 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    spider mySpider(url, depth, path);
-    mySpider.downloadImages();
+    try {
+        spider mySpider(url, depth, path);
+        mySpider.downloadImages();
+    } catch (const std::exception& e) {
+        std::cerr << "An error occurred: " << e.what() << std::endl;
+    }
 
     return 0;
 }

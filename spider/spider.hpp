@@ -18,6 +18,8 @@ private:
     std::string path;
     std::ofstream logFile;
 
+    static const std::vector<std::string> validExtensions;
+
     void log(const std::string& message);
     std::string fetchContent(const std::string& url);
     std::vector<std::string> extractImageUrls(const std::string& content);

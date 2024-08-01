@@ -3,6 +3,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+// Definição das extensões de imagem válidas
+const std::vector<std::string> spider::validExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
+
 spider::spider(const std::string& url, int depth, const std::string& path)
     : url(url), depth(depth), path(path) {
     logFile.open("spider.log");
@@ -10,8 +13,10 @@ spider::spider(const std::string& url, int depth, const std::string& path)
         std::cerr << "Failed to open log file." << std::endl;
     }
     log("Starting spider with URL: " + url + ", Depth: " + std::to_string(depth) + ", Path: " + path);
-    if (!createDirectories(path)) {
-        log("Failed to create directories for path: " + path);
+    if (path == "./data/") {
+        if (!createDirectories(path)) {
+            log("Failed to create directories for path: " + path);
+        }
     }
 }
 
@@ -49,7 +54,6 @@ std::string spider::fetchContent(const std::string& url) {
 
 std::vector<std::string> spider::extractImageUrls(const std::string& content) {
     std::vector<std::string> imageUrls;
-    std::vector<std::string> validExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
     size_t pos = 0;
     while ((pos = content.find("src=\"", pos)) != std::string::npos) {
         pos += 5;  // skip past "src=\""
