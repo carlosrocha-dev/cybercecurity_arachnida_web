@@ -1,11 +1,15 @@
-FROM node:14-buster
+FROM debian:bullseye-slim
+
+RUN apt-get update && apt-get install -y \
+    g++ \
+    libexiv2-dev \
+    build-essential \
+    make
 
 WORKDIR /app
 
-COPY package*.json ./
-
-RUN npm install
-
 COPY . .
 
-CMD ["npm", "start"]
+RUN make
+
+ENTRYPOINT ["/bin/bash"]

@@ -4,41 +4,63 @@
 #include <sstream>
 #include <exiv2/exiv2.hpp>
 
-void Scorpion::parseFiles(const std::vector<std::string>& files) {
+scorpion::scorpion() {
+    logFile.open("scorpion.log");
+    if (!logFile) {
+        std::cerr << "Failed to open log file." << std::endl;
+    }
+}
+
+void scorpion::log(const std::string& message) {
+    if (logFile) {
+        logFile << message << std::endl;
+    }
+    std::cout << message << std::endl;
+}
+
+void scorpion::parseFiles(const std::vector<std::string>& files) {
     for (const auto& file : files) {
         std::string metadata = readMetadata(file);
         if (metadata.empty()) {
-            std::cerr << "No metadata found for file " << file << std::endl;
+            log("No metadata found for file " + file);
             continue;
         }
-        std::cout << "Metadata for " << file << ":\n" << metadata << std::endl;
+        log("Metadata for " + file + ":\n" + metadata);
     }
 }
 
-void Scorpion::modifyMetadata(const std::string& file, const std::string& key, const std::string& value) {
+void scorpion::modifyMetadata(const std::string& file, const std::string& key, const std::string& value) {
     try {
-        std::cout << "Opening file: " << file << std::endl;
+        log("Opening file: " + file);
         auto image = Exiv2::ImageFactory::open(file);
         image->readMetadata();
-        std::cout << "Reading metadata from file: " << file << std::endl;
+        log("Reading metadata from file: " + file);
 
         auto& exifData = image->exifData();
         Exiv2::ExifKey exifKey(key);
-        Exiv2::Exifdatum datum(exifKey);
-        datum.setValue(value);
-        exifData.add(datum);
+        auto pos = exifData.findKey(exifKey);
 
-        std::cout << "Setting metadata: " << key << " to " << value << std::endl;
+        if (pos != exifData.end()) {
+            log("Updating existing metadata: " + key + " to " + value);
+            pos->setValue(value);
+        } else {
+            log("Adding new metadata: " + key + " to " + value);
+            Exiv2::Exifdatum datum(exifKey);
+            datum.setValue(value);
+            exifData.add(datum);
+        }
+
         image->setExifData(exifData);
         image->writeMetadata();
-        std::cout << "Writing metadata to file: " << file << std::endl;
+        log("Writing metadata to file: " + file);
     } catch (const Exiv2::Error& e) {
-        std::cerr << "Error modifying metadata in file " << file << ": " << e.what() << std::endl;
+        log("Error modifying metadata in file " + file + ": " + e.what());
     }
 }
 
-void Scorpion::deleteMetadata(const std::string& file, const std::string& key) {
+void scorpion::deleteMetadata(const std::string& file, const std::string& key) {
     try {
+        log("Opening file: " + file);
         auto image = Exiv2::ImageFactory::open(file);
         image->readMetadata();
 
@@ -46,23 +68,28 @@ void Scorpion::deleteMetadata(const std::string& file, const std::string& key) {
         auto it = exifData.findKey(Exiv2::ExifKey(key));
         if (it != exifData.end()) {
             exifData.erase(it);
+            log("Deleted metadata key: " + key);
+        } else {
+            log("Metadata key not found: " + key);
         }
 
         image->setExifData(exifData);
         image->writeMetadata();
+        log("Writing metadata to file: " + file);
     } catch (const Exiv2::Error& e) {
-        std::cerr << "Error deleting metadata in file " << file << ": " << e.what() << std::endl;
+        log("Error deleting metadata in file " + file + ": " + e.what());
     }
 }
 
-std::string Scorpion::readMetadata(const std::string& file) {
+std::string scorpion::readMetadata(const std::string& file) {
     try {
+        log("Opening file: " + file);
         auto image = Exiv2::ImageFactory::open(file);
         image->readMetadata();
 
         auto& exifData = image->exifData();
         if (exifData.empty()) {
-            std::cerr << "No Exif data found in file: " << file << std::endl;
+            log("No Exif data found in file: " + file);
             return "";
         }
 
@@ -72,13 +99,14 @@ std::string Scorpion::readMetadata(const std::string& file) {
         }
         return metadataStream.str();
     } catch (const Exiv2::Error& e) {
-        std::cerr << "Error reading metadata from file " << file << ": " << e.what() << std::endl;
+        log("Error reading metadata from file " + file + ": " + e.what());
         return "";
     }
 }
 
-void Scorpion::writeMetadata(const std::string& file, const std::string& metadata) {
+void scorpion::writeMetadata(const std::string& file, const std::string& metadata) {
     try {
+        log("Opening file: " + file);
         auto image = Exiv2::ImageFactory::open(file);
         image->readMetadata();
 
@@ -99,8 +127,8 @@ void Scorpion::writeMetadata(const std::string& file, const std::string& metadat
 
         image->setExifData(exifData);
         image->writeMetadata();
-        std::cout << "Writing metadata to file: " << file << std::endl;
+        log("Writing metadata to file: " + file);
     } catch (const Exiv2::Error& e) {
-        std::cerr << "Error writing metadata to file " << file << ": " << e.what() << std::endl;
+        log("Error writing metadata to file " + file + ": " + e.what());
     }
 }

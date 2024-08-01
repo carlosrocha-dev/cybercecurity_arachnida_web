@@ -1,44 +1,57 @@
+#include "scorpion.hpp"
 #include <iostream>
 #include <vector>
-#include "scorpion.hpp"
+#include <cstring>
+
+void printUsage(const char* programName) {
+    std::cout << "Usage: " << programName << " [options] FILE1 [FILE2 ...]\n"
+              << "Options:\n"
+              << "  -m <file> <key> <value>  Modify metadata\n"
+              << "  -d <file> <key>          Delete metadata\n";
+}
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
-        std::cerr << "Usage: " << argv[0] << " [option] FILE [FILE2 ...] [key value]" << std::endl;
-        std::cerr << "Options:" << std::endl;
-        std::cerr << "  -l          List metadata" << std::endl;
-        std::cerr << "  -m KEY VAL  Modify metadata" << std::endl;
-        std::cerr << "  -d KEY      Delete metadata" << std::endl;
+        printUsage(argv[0]);
         return 1;
     }
 
-    std::string option = argv[1];
+    scorpion sc;
     std::vector<std::string> files;
-    std::string key, value;
+    std::string file, key, value;
 
-    if (option == "-l") {
-        for (int i = 2; i < argc; ++i) {
+    for (int i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], "-m") == 0) {
+            if (i + 3 < argc) {
+                file = argv[++i];
+                key = argv[++i];
+                value = argv[++i];
+                sc.modifyMetadata(file, key, value);
+                return 0;
+            } else {
+                std::cerr << "Option -m requires <file> <key> <value>" << std::endl;
+                return 1;
+            }
+        } else if (strcmp(argv[i], "-d") == 0) {
+            if (i + 2 < argc) {
+                file = argv[++i];
+                key = argv[++i];
+                sc.deleteMetadata(file, key);
+                return 0;
+            } else {
+                std::cerr << "Option -d requires <file> <key>" << std::endl;
+                return 1;
+            }
+        } else {
             files.push_back(argv[i]);
         }
-    } else if (option == "-m" && argc >= 5) {
-        files.push_back(argv[2]);
-        key = argv[3];
-        value = argv[4];
-    } else if (option == "-d" && argc >= 4) {
-        files.push_back(argv[2]);
-        key = argv[3];
-    } else {
-        std::cerr << "Invalid option or insufficient arguments." << std::endl;
-        return 1;
     }
 
-    Scorpion scorpion;
-    if (option == "-l") {
-        scorpion.parseFiles(files);
-    } else if (option == "-m") {
-        scorpion.modifyMetadata(files[0], key, value);
-    } else if (option == "-d") {
-        scorpion.deleteMetadata(files[0], key);
+    if (!files.empty()) {
+        sc.parseFiles(files);
+    } else {
+        printUsage(argv[0]);
+        return 1;
     }
 
     return 0;
